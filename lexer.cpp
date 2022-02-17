@@ -13,7 +13,7 @@ struct token{
 };
 
 vector<token> token_Set;
-vector<string> keywords = {"main","int","flt","str","bool","for","while","return","var","if","elsif","else","print"};
+vector<string> keywords = {"main","int","float","string","bool","for","while","return","var","if","elsif","else","print"};
 
 static token newtk(int tk_num,string lex,int line){
 	token tk;
@@ -128,6 +128,8 @@ void getDelim(string line,int*idx,int lc){
 		case ',': token_Set.push_back(newtk(404,",",lc));break;
 		case '[': token_Set.push_back(newtk(405,"[",lc));break;
 		case ']': token_Set.push_back(newtk(406,"]",lc));break;
+		case ';': token_Set.push_back(newtk(200,";",lc));idx++;break;
+
 	}
 	(*idx)++;
 }
@@ -264,9 +266,9 @@ int main(){
 					case ')':
 					case '[':
 					case ']':
+					case ';':
 					case ',': getDelim(line,&idx,lc);break; 
 					case ':': scanAssignOp(line,&idx,lc);break;
-					case ';': token_Set.push_back(newtk(200,";",lc));idx++;break;
 					default : throw_error(line[idx],lc);idx++;break;
 
 				}
