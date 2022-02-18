@@ -25,11 +25,11 @@ static token newtk(int tk_num,string lex,int line){
 
 // error for stray character 
 void throw_error(char ch,int lc){
-	cout<<"Lexical error: stray "<< "'" << ch << "'" << "in program at line number = "<<lc<<endl;
+	cout<<"Lexical error: stray "<< "\'" << ch << "\'" << " in program at line number = "<<lc<<endl;
 }
 // error for stray lexeme
 void throw_error(string lex,int *idx,int lc){
-	cout<<"Lexical error: stray "<< "'" << lex << "'" << "in program at line number = "<<lc<<endl;
+	cout<<"Lexical error: stray "<< "\'" << lex << "\'" << " in program at line number = "<<lc<<endl;
     (*idx)++;
 }
 // ignore comments while reading input file
@@ -52,9 +52,8 @@ void skipComments(string line,int *idx,int lc){
 void scanArithOp(string line,int *idx,int lc){
 	switch(line[*idx]){
 		case '+':token_Set.push_back(newtk(300,"+",lc));break;
-		case '-':token_Set.push_back(newtk(301,"-",lc));break;
-		case '*':token_Set.push_back(newtk(302,"*",lc));break;
-		case '/':token_Set.push_back(newtk(303,"/",lc));break;
+		case '*':token_Set.push_back(newtk(301,"*",lc));break;
+		case '/':token_Set.push_back(newtk(302,"/",lc));break;
 	}
 	(*idx)++;
 }
@@ -128,23 +127,30 @@ void getDelim(string line,int*idx,int lc){
 		case ',': token_Set.push_back(newtk(404,",",lc));break;
 		case '[': token_Set.push_back(newtk(405,"[",lc));break;
 		case ']': token_Set.push_back(newtk(406,"]",lc));break;
-		case ';': token_Set.push_back(newtk(200,";",lc));idx++;break;
+		case ';': token_Set.push_back(newtk(200,";",lc));break;
 
 	}
 	(*idx)++;
 }
 
-// dfa for scanning numbers
+// dfa for scanning numbers (integer/float)
 void scanNumberToken(string  line,int*idx,int lc){
 	int state=0; //start state
 	string lexeme="";
-	
+	int isNeg=0;
+	if(line[*idx]=='-'){
+		lexeme+=line[*idx];
+		(*idx)++;
+		isNeg=1;
+	}
 	if(line[*idx]<'0'||line[*idx]>'9'){
 		state=5;
-		throw_error(lexeme,idx,lc);
+		throw_error(line[*idx],lc);
 		(*idx)--;
 		return;
 	}
+
+
 	if(state==0){
 	if(line[*idx]>='1'&&line[*idx]<='9'){
        state=2;
@@ -171,7 +177,11 @@ void scanNumberToken(string  line,int*idx,int lc){
     		(*idx)++;
     	}
     	else{
-    		token_Set.push_back(newtk(101,lexeme,lc));
+    		if(isNeg==1){
+    			throw_error(lexeme,idx,lc);
+    		}
+    		else{
+    		token_Set.push_back(newtk(101,lexeme,lc));}
     	}
     }
     if(state==2){
@@ -214,9 +224,16 @@ void scanNumberToken(string  line,int*idx,int lc){
 // dfa for scanning named entities
 void scanNamesToken(string  line,int*idx,int lc){
 	string lexeme="";
-	while((line[*idx])&&((line[*idx]>='a'&&line[*idx]<='z')||(line[*idx]>='0'&&line[*idx]<='9')||(line[*idx]>='A'&&line[*idx]<='Z'))){
+	(*idx)--;
+	char firstLetter = line[*idx];
+	(*idx)++;
+	while((line[*idx])&&((line[*idx]>='a'&&line[*idx]<='z')||(line[*idx]>='0'&&line[*idx]<='9')||(line[*idx]>='A'&&line[*idx]<='Z')||(line[*idx]=='_'))){
         lexeme += line[*idx];
 		(*idx)++;
+	}
+	if(firstLetter>='0'&&firstLetter<='9'){
+		throw_error(firstLetter+lexeme,idx,lc);
+		return;
 	}
 	int flg=0;
 	for(int i=0;i<keywords.size();i++){
@@ -227,6 +244,7 @@ void scanNamesToken(string  line,int*idx,int lc){
 		}
 	}
 	if(flg==0){
+
       token_Set.push_back(newtk(500,lexeme,lc));
 	}
 }
@@ -234,15 +252,15 @@ void scanNamesToken(string  line,int*idx,int lc){
 int main(){
 	ifstream fin; // input file stream
 	ofstream fout; // output file stream
-	fin.open("C:/Users/BITS-PC/Desktop/Compiler Project/TC/tc_6.txt");
-	fout.open("C:/Users/BITS-PC/Desktop/Compiler Project/TC/tc_6_op.txt");
+	fin.open("C:/Users/BITS-PC/Desktop/Compiler Project/TC/tc_7.txt");
+	fout.open("C:/Users/BITS-PC/Desktop/Compiler Project/TC/tc_7_op.txt");
 	int lc = 0; // maintains line number count
 	string line; 
 	while(getline(fin,line)){
 		lc++; 
 		int idx=0; // positional index
 		while(line[idx]){
-			if((line[idx]>='0'&&line[idx]<='9')){
+			if((line[idx]>='0'&&line[idx]<='9')||(line[idx]=='-')){
 				scanNumberToken(line,&idx,lc);
 			}
 			else if((line[idx]>='A'&&line[idx]<='Z')||(line[idx]>='a'&&line[idx]<='z')){
