@@ -249,6 +249,21 @@ void scanNamesToken(string  line,int*idx,int lc){
 	}
 }
 
+void scanStringliterals(string line,int*idx,int lc){
+	//cout<<"str"<<endl;
+	string lexeme = "";
+	(*idx)++;
+	while(line[*idx]!='\"'){
+		//cout<<line[*idx]<<endl;
+		lexeme += line[*idx];
+		(*idx)++;
+	}
+	token_Set.push_back(newtk(111,lexeme,lc));
+	(*idx)++;
+
+
+}
+
 int main(){
 	ifstream fin; // input file stream
 	ofstream fout; // output file stream
@@ -287,6 +302,7 @@ int main(){
 					case ';':
 					case ',': getDelim(line,&idx,lc);break; 
 					case ':': scanAssignOp(line,&idx,lc);break;
+					case '\"':scanStringliterals(line,&idx,lc);break;
 					default : throw_error(line[idx],lc);idx++;break;
 
 				}
