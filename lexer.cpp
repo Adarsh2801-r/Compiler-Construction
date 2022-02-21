@@ -52,8 +52,9 @@ void skipComments(string line,int *idx,int lc){
 void scanArithOp(string line,int *idx,int lc){
 	switch(line[*idx]){
 		case '+':token_Set.push_back(newtk(300,"+",lc));break;
-		case '*':token_Set.push_back(newtk(301,"*",lc));break;
-		case '/':token_Set.push_back(newtk(302,"/",lc));break;
+		case '-':token_Set.push_back(newtk(301,"-",lc));break;
+		case '*':token_Set.push_back(newtk(302,"*",lc));break;
+		case '/':token_Set.push_back(newtk(303,"/",lc));break;
 	}
 	(*idx)++;
 }
@@ -137,12 +138,7 @@ void getDelim(string line,int*idx,int lc){
 void scanNumberToken(string  line,int*idx,int lc){
 	int state=0; //start state
 	string lexeme="";
-	int isNeg=0;
-	if(line[*idx]=='-'){
-		lexeme+=line[*idx];
-		(*idx)++;
-		isNeg=1;
-	}
+	
 	if(line[*idx]<'0'||line[*idx]>'9'){
 		state=5;
 		throw_error(line[*idx],lc);
@@ -177,11 +173,7 @@ void scanNumberToken(string  line,int*idx,int lc){
     		(*idx)++;
     	}
     	else{
-    		if(isNeg==1){
-    			throw_error(lexeme,idx,lc);
-    		}
-    		else{
-    		token_Set.push_back(newtk(101,lexeme,lc));}
+    		token_Set.push_back(newtk(101,lexeme,lc));
     	}
     }
     if(state==2){
@@ -253,6 +245,7 @@ void scanStringliterals(string line,int*idx,int lc){
 	//cout<<"str"<<endl;
 	string lexeme = "";
 	(*idx)++;
+	int flg=0;
 	while(line[*idx]!='\"'){
 		//cout<<line[*idx]<<endl;
 		lexeme += line[*idx];
@@ -264,18 +257,18 @@ void scanStringliterals(string line,int*idx,int lc){
 
 }
 
-int main(){
+int scanTokens(){
 	ifstream fin; // input file stream
 	ofstream fout; // output file stream
-	fin.open("C:/Users/BITS-PC/Desktop/Compiler Project/TC/tc_7.txt");
-	fout.open("C:/Users/BITS-PC/Desktop/Compiler Project/TC/tc_7_op.txt");
+	fin.open("C:/Users/BITS-PC/Desktop/Compiler Project/TC/tc_2.txt");
+	fout.open("C:/Users/BITS-PC/Desktop/Compiler Project/TC/tc_2_op.txt");
 	int lc = 0; // maintains line number count
 	string line; 
 	while(getline(fin,line)){
 		lc++; 
 		int idx=0; // positional index
 		while(line[idx]){
-			if((line[idx]>='0'&&line[idx]<='9')||(line[idx]=='-')){
+			if((line[idx]>='0'&&line[idx]<='9')){
 				scanNumberToken(line,&idx,lc);
 			}
 			else if((line[idx]>='A'&&line[idx]<='Z')||(line[idx]>='a'&&line[idx]<='z')){
