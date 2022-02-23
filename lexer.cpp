@@ -48,16 +48,7 @@ void skipComments(string line,int *idx,int lc){
 	}
 }
 
-//dfa for arithmetic op
-void scanArithOp(string line,int *idx,int lc){
-	switch(line[*idx]){
-		case '+':token_Set.push_back(newtk(300,"+",lc));break;
-		case '-':token_Set.push_back(newtk(301,"-",lc));break;
-		case '*':token_Set.push_back(newtk(302,"*",lc));break;
-		case '/':token_Set.push_back(newtk(303,"/",lc));break;
-	}
-	(*idx)++;
-}
+
 
 // dfa for relational operators
 void scanRelOp(string line,int *idx,int lc){
@@ -117,22 +108,6 @@ void scanAssignOp(string line,int*idx,int lc){
 	(*idx)++;
 }
 
-
-// scanning delimiters
-void getDelim(string line,int*idx,int lc){
-	switch(line[*idx]){
-		case '{': token_Set.push_back(newtk(400,"{",lc));break;
-		case '}': token_Set.push_back(newtk(401,"}",lc));break;
-		case '(': token_Set.push_back(newtk(402,"(",lc));break;
-		case ')': token_Set.push_back(newtk(403,")",lc));break;
-		case ',': token_Set.push_back(newtk(404,",",lc));break;
-		case '[': token_Set.push_back(newtk(405,"[",lc));break;
-		case ']': token_Set.push_back(newtk(406,"]",lc));break;
-		case ';': token_Set.push_back(newtk(200,";",lc));break;
-
-	}
-	(*idx)++;
-}
 
 // dfa for scanning numbers (integer/float)
 void scanNumberToken(string  line,int*idx,int lc){
@@ -257,22 +232,25 @@ void scanStringliterals(string line,int*idx,int lc){
 
 }
 
+
 int scanTokens(){
 	ifstream fin; // input file stream
 	ofstream fout; // output file stream
-	fin.open("C:/Users/BITS-PC/Desktop/Compiler Project/TC/tc_2.txt");
-	fout.open("C:/Users/BITS-PC/Desktop/Compiler Project/TC/tc_2_op.txt");
+	fin.open("C:/Users/BITS-PC/Desktop/Compiler Project/TC/tc_7.txt");
+	fout.open("C:/Users/BITS-PC/Desktop/Compiler Project/TC/tc_7_op.txt");
 	int lc = 0; // maintains line number count
 	string line; 
 	while(getline(fin,line)){
 		lc++; 
 		int idx=0; // positional index
 		while(line[idx]){
-			if((line[idx]>='0'&&line[idx]<='9')){
-				scanNumberToken(line,&idx,lc);
+			if((line[idx]>='A'&&line[idx]<='Z')||(line[idx]>='a'&&line[idx]<='z')){
+			   	scanNamesToken(line,&idx,lc);
+
 			}
-			else if((line[idx]>='A'&&line[idx]<='Z')||(line[idx]>='a'&&line[idx]<='z')){
-				scanNamesToken(line,&idx,lc);
+			else if((line[idx]>='0'&&line[idx]<='9')){
+				scanNumberToken(line,&idx,lc);
+
 			}
 			else{
 				switch(line[idx]){
@@ -282,7 +260,15 @@ int scanTokens(){
 					case '+':
 					case '-':
 					case '*':
-					case '/': scanArithOp(line,&idx,lc); break; // arithmetic operators
+					case '/': 
+					switch(line[idx]){
+		            case '+':token_Set.push_back(newtk(300,"+",lc));break;
+		            case '-':token_Set.push_back(newtk(301,"-",lc));break;
+		            case '*':token_Set.push_back(newtk(302,"*",lc));break;
+		            case '/':token_Set.push_back(newtk(303,"/",lc));break;
+	                }
+	                idx++; 
+	                break; // arithmetic operators
 					case '>':
 					case '<':
 					case '=': scanRelOp(line,&idx,lc);break; // relational operator
@@ -293,7 +279,21 @@ int scanTokens(){
 					case '[':
 					case ']':
 					case ';':
-					case ',': getDelim(line,&idx,lc);break; 
+					case ',': 
+					// delimiters
+					switch(line[idx]){
+		            case '{': token_Set.push_back(newtk(400,"{",lc));break;
+		            case '}': token_Set.push_back(newtk(401,"}",lc));break;
+		            case '(': token_Set.push_back(newtk(402,"(",lc));break;
+		            case ')': token_Set.push_back(newtk(403,")",lc));break;
+		            case ',': token_Set.push_back(newtk(404,",",lc));break;
+		            case '[': token_Set.push_back(newtk(405,"[",lc));break;
+		            case ']': token_Set.push_back(newtk(406,"]",lc));break;
+		            case ';': token_Set.push_back(newtk(200,";",lc));break;
+
+	                }
+	                idx++;
+					break; 
 					case ':': scanAssignOp(line,&idx,lc);break;
 					case '\"':scanStringliterals(line,&idx,lc);break;
 					default : throw_error(line[idx],lc);idx++;break;
