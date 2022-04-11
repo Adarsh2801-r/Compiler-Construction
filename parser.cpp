@@ -26,7 +26,7 @@ int main(){
 	scanTokens();
     
     // structure of algorithm
-	/*
+     /*
 	stack<string> st;
     |    |
     | 0  |<-- INITIAL STACK
