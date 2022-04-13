@@ -412,7 +412,11 @@ map<pair<int,string>,pair<char,int>> populate_parse_table(){
 // parser to call the lexer function
 int main(){
 	scanTokens();
-    
+	
+    for(token tk:token_Set){
+    	int tk_no = tk.tk_no;
+    	cout<<symbol_table[tk_no]<<endl;
+    }
     // structure of algorithm
 	/*
 	stack<string> st;
