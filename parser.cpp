@@ -472,20 +472,25 @@ int main(){
     while(ptr < token_Set.size())
     {
     	stack<string> tmp = st;
-    	while(!tmp.empty()){
-    		cout<<tmp.top()<<" ";
-    		tmp.pop();
-    	}
+
     	token tk = token_Set[ptr];
     	int tk_no = tk.tk_no;
     	string input = symbol_table[tk_no];
     	pair<char,int> action = parse_table[{stoi(st.top()),input}];
-    	cout << " == " << input << " == " << action.first << action.second<<endl;
+    	cout << "Input token : " << tk.lexeme << endl;
+    	cout<<"Stack state : ";
+    	while(!tmp.empty()){
+    		cout<<tmp.top()<<" ";
+    		tmp.pop();
+    	}
+    	cout<<endl;
+    	cout << "Action : " << action.first << action.second<<endl;
 
     	if(action.first=='a'){
     		cout<<"ACCEPTED"<<endl;
     		break;
     	}
+    	cout << "=================================================================" <<endl;
     	if(action.first == 's'){
     	   st.push(input);
     	   st.push(to_string(action.second));	
