@@ -1,0 +1,11 @@
+SDD for Arithmetic Expressions
+
+S -> id := E
+E -> E + E
+E -> E - E
+E -> E * E
+E -> E / E
+E -> - E
+E -> ( E )
+E -> id
+
