@@ -137,8 +137,8 @@ string newTemp(){
 
 int main(){
 	ofstream fout; // output file stream
-	fout.open("C:/Users/BITS-PC/Desktop/Compiler Project/TC_IR/tc_1_op.txt");
-    scanTokens();
+	fout.open("C:/Users/BITS-PC/Desktop/Compiler Project/TC_IR/tc_5_op.txt");
+    scanTokens("C:/Users/BITS-PC/Desktop/Compiler Project/TC_IR/tc_5.txt","C:/Users/BITS-PC/Desktop/Compiler Project/TC_lexer/tc_ir.txt");
     map<pair<int,string>,pair<char,int>> parse_table = populate_parse_table1();
     stack<string>st;
     vector<string> rules = get_rules();
@@ -341,10 +341,6 @@ int main(){
             
 
         }
-
-
-
-
     }
 
     string intermediate_code = attribute_stk.top().second;
@@ -354,6 +350,13 @@ int main(){
     cout<<endl;
     cout<<intermediate_code;
     cout<<"---------------------"<<endl;
+    fout<<"---------------------"<<endl;
+    fout<<"Intermediate code for arithmetic_expression : "<<endl;
+    fout<<endl;
+    fout<<intermediate_code;
+    fout<<"---------------------"<<endl;
+
+    
 
 
 
